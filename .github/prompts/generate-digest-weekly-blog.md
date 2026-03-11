@@ -14,9 +14,9 @@ Synthesize the week's highlights into a thematic roundup. Do NOT just concatenat
 1. Group items by theme/topic (e.g., "LLM Tooling", "Agent Frameworks", "Launches & Releases"), not by day
 2. For each theme, synthesize across days — connect related items, identify patterns
 3. Go ~1.5-2x deeper than daily digests — more analysis, broader context, practical implications
-4. Include source Telegram links as `<a href>` tags so readers can find originals
-5. Skip anything that was marginal in daily digests — weekly only keeps the best
-6. If a topic appeared across multiple days, merge into one stronger section
+4. Skip anything that was marginal in daily digests — weekly only keeps the best
+5. If a topic appeared across multiple days, merge into one stronger section
+6. No source links — keep the blog clean and original
 
 ## Value ranking
 
@@ -28,8 +28,8 @@ Synthesize the week's highlights into a thematic roundup. Do NOT just concatenat
 
 ## Output Format
 
-Write the digest as HTML. Include source links as `<a href>` tags.
-Use ONLY these tags: `<h2>`, `<h3>`, `<p>`, `<ol>`, `<ul>`, `<li>`, `<strong>`, `<em>`, `<a>`. No `<html>`, `<body>`, `<div>`, or `<br>` tags.
+Write the digest as HTML. No links.
+Use ONLY these tags: `<h2>`, `<h3>`, `<p>`, `<ol>`, `<ul>`, `<li>`, `<strong>`, `<em>`. No `<html>`, `<body>`, `<div>`, `<br>`, or `<a>` tags.
 
 Structure:
 
@@ -40,7 +40,7 @@ Structure:
 <h2>Theme Name</h2>
 
 <h3>Topic Title</h3>
-<p>What happened — synthesize from multiple daily items if applicable. Include <a href="https://t.me/...">source links</a>.</p>
+<p>What happened — synthesize from multiple daily items if applicable.</p>
 <p>Why it matters — deeper analysis, cross-day connections, broader context.</p>
 <p>What to do — actionable takeaways, things to try.</p>
 
