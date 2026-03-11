@@ -2,11 +2,10 @@
 """Telegram AI Content Curator — single entry point.
 
 Usage:
-  python telegram.py --read --since 6                          # Last N hours
+  python telegram.py --read                                    # Last 1 day
   python telegram.py --read --start-date 2026-03-01            # From date to now
   python telegram.py --read --start-date 2026-03-01 --end-date 2026-03-05  # Date range
-  python telegram.py --read --channel @my_channel --since 168  # Read specific channel
-  python telegram.py --read --channel @my_channel --resolve-links  # Resolve t.me links
+  python telegram.py --read --channel @my_channel --resolve-links  # Read specific channel + resolve links
   python telegram.py --post                                    # Publish digest
 """
 
@@ -94,7 +93,7 @@ async def _resolve_links(client, collected):
     print(f"Resolved {resolved_count}/{len(all_links)} links")
 
 
-async def cmd_read(since_hours: float, start_date: str = None, end_date: str = None,
+async def cmd_read(start_date: str = None, end_date: str = None,
                    channel: str = None, resolve_links: bool = False):
     client = get_telegram_client()
     await client.connect()
@@ -115,7 +114,7 @@ async def cmd_read(since_hours: float, start_date: str = None, end_date: str = N
             else datetime.now(timezone.utc)
         )
     else:
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=since_hours)
+        cutoff = datetime.now(timezone.utc) - timedelta(days=1)
         cutoff_end = datetime.now(timezone.utc)
 
     # Build channel list: single channel (--channel) or all subscribed
@@ -298,9 +297,8 @@ async def cmd_list_channels():
 def main():
     parser = argparse.ArgumentParser(description="Telegram AI Content Curator")
     parser.add_argument("--read", action="store_true", help="Read channels → /tmp/telegram_messages.json")
-    parser.add_argument("--since", type=float, default=6, help="Hours to look back (default: 6)")
-    parser.add_argument("--start-date", type=str, help="Start date (YYYY-MM-DD), overrides --since")
-    parser.add_argument("--end-date", type=str, help="End date (YYYY-MM-DD, defaults to now)")
+    parser.add_argument("--start-date", type=str, help="Start date (YYYY-MM-DD, default: last 24h)")
+    parser.add_argument("--end-date", type=str, help="End date (YYYY-MM-DD, default: now)")
     parser.add_argument("--channel", type=str, help="Read from a specific channel (e.g. @my_channel)")
     parser.add_argument("--resolve-links", action="store_true", help="Resolve t.me links in messages")
     parser.add_argument("--post", action="store_true", help="Publish /tmp/llm_response.txt to channel")
@@ -314,7 +312,7 @@ def main():
     if args.list_channels:
         asyncio.run(cmd_list_channels())
     elif args.read:
-        asyncio.run(cmd_read(args.since, start_date=args.start_date, end_date=args.end_date,
+        asyncio.run(cmd_read(start_date=args.start_date, end_date=args.end_date,
                              channel=args.channel, resolve_links=args.resolve_links))
     elif args.post:
         asyncio.run(cmd_post())

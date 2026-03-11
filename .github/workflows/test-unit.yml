@@ -1,0 +1,26 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pytest
+          pip install -r agent/integrations/telegram/requirements.txt
+          pip install -r agent/integrations/ghost/requirements.txt
+          pip install -r agent/integrations/substack/requirements.txt
+
+      - name: Run tests
+        run: python -m pytest agent/integrations/ -v

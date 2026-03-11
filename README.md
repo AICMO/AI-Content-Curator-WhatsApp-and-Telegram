@@ -1,5 +1,12 @@
 # AI Content Curator & Publisher
 
+[![Unit Tests](https://github.com/AICMO/telegram-ai-group-publisher/actions/workflows/test-unit.yml/badge.svg)](https://github.com/AICMO/telegram-ai-group-publisher/actions/workflows/test-unit.yml)
+[![Daily Digest](https://github.com/AICMO/telegram-ai-group-publisher/actions/workflows/generate-digest-daily.yml/badge.svg)](https://github.com/AICMO/telegram-ai-group-publisher/actions/workflows/generate-digest-daily.yml)
+[![Weekly Digest](https://github.com/AICMO/telegram-ai-group-publisher/actions/workflows/generate-digest-weekly.yml/badge.svg)](https://github.com/AICMO/telegram-ai-group-publisher/actions/workflows/generate-digest-weekly.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg)](https://python.org)
+[![Agentic](https://img.shields.io/badge/Agentic-AI_Pipeline-FF6F00.svg)](https://github.com/AICMO/telegram-ai-group-publisher)
+
 Stateless pipeline: reads your Telegram channels, LLM curates a digest, publishes to Telegram, Ghost, and Substack.
 
 ## How it works
@@ -72,7 +79,7 @@ See [agent/integrations/substack/README.md](agent/integrations/substack/README.m
 ### 5. Run
 
 **Daily digest**: Runs automatically at 4:00 UTC. Manual: Actions → "Generate Daily Digest" → Run workflow.
-Supports workflow dispatch inputs: `since_hours`, `start_date`, `end_date`, and per-platform publish toggles.
+Supports workflow dispatch inputs: `start_date`, `end_date`, and per-platform publish toggles.
 
 **Weekly digest**: Runs automatically Saturday at 6:00 UTC. Manual: Actions → "Generate Weekly Digest" → Run workflow.
 Reads published daily digests from the publish channel, resolves t.me source links, and synthesizes a thematic weekly roundup. Supports `start_date`, `end_date`, and per-platform publish toggles.

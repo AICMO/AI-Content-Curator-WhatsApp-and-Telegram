@@ -232,22 +232,22 @@ def html_to_prosemirror(html: str) -> list:
 # Title prefix
 # ============================================================
 
-def _digest_title(since_hours: float = 24, start_date: str = None, end_date: str = None) -> str:
+def _digest_title(start_date: str = None, end_date: str = None) -> str:
     """Build digest title from time range."""
     start_date = start_date or None
     end_date = end_date or None
     if start_date:
-        end = datetime.strptime(end_date, "%Y-%m-%d") if end_date else datetime.now(timezone.utc)
+        end = datetime.strptime(end_date, "%Y-%m-%d") if end_date else datetime.now(timezone.utc).replace(tzinfo=None)
         start = datetime.strptime(start_date, "%Y-%m-%d")
-        span_hours = (end - start).total_seconds() / 3600 + 24
+        span_days = (end - start).days
         date_str = end.strftime("%B %d, %Y")
     else:
-        span_hours = since_hours
+        span_days = 0
         date_str = datetime.now(timezone.utc).strftime("%B %d, %Y")
 
-    if span_hours <= 24:
+    if span_days <= 1:
         prefix = "[Daily] "
-    elif span_hours <= 168:
+    elif span_days <= 7:
         prefix = "[Weekly] "
     else:
         prefix = ""
@@ -259,7 +259,7 @@ def _digest_title(since_hours: float = 24, start_date: str = None, end_date: str
 # CLI
 # ============================================================
 
-def cmd_post(draft_only: bool = False, since_hours: float = 24, start_date: str = None, end_date: str = None):
+def cmd_post(draft_only: bool = False, start_date: str = None, end_date: str = None):
     if not LLM_RESPONSE_TMP.exists():
         print(f"Error: {LLM_RESPONSE_TMP} not found. Run the LLM pipeline first.")
         sys.exit(1)
@@ -286,7 +286,7 @@ def cmd_post(draft_only: bool = False, since_hours: float = 24, start_date: str 
     )
     print(f"Authenticated as user {api.user_id}")
 
-    title = _digest_title(since_hours, start_date, end_date)
+    title = _digest_title(start_date, end_date)
 
     body_content = html_to_prosemirror(digest_text)
     print(f"Content: {len(digest_text)} chars → {len(body_content)} ProseMirror nodes")
@@ -309,7 +309,6 @@ def main():
     parser = argparse.ArgumentParser(description="Substack Publisher")
     parser.add_argument("--post", action="store_true", help="Publish /tmp/llm_response.txt to Substack")
     parser.add_argument("--draft", action="store_true", help="Create draft only, don't publish")
-    parser.add_argument("--since-hours", type=float, default=24, help="Hours of content (for title prefix)")
     parser.add_argument("--start-date", type=str, help="Start date YYYY-MM-DD (for title)")
     parser.add_argument("--end-date", type=str, help="End date YYYY-MM-DD (for title)")
     args = parser.parse_args()
@@ -318,7 +317,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    cmd_post(draft_only=args.draft, since_hours=args.since_hours, start_date=args.start_date, end_date=args.end_date)
+    cmd_post(draft_only=args.draft, start_date=args.start_date, end_date=args.end_date)
 
 
 if __name__ == "__main__":

@@ -5,15 +5,11 @@ on:
     - cron: '0 4 * * *'  # Daily at 4:00 UTC
   workflow_dispatch:
     inputs:
-      since_hours:
-        description: 'Hours to look back (ignored if start_date set)'
-        required: false
-        default: '24'
       start_date:
-        description: 'Start date (YYYY-MM-DD)'
+        description: 'Start date (YYYY-MM-DD, default: last 24h)'
         required: false
       end_date:
-        description: 'End date (YYYY-MM-DD, defaults to now)'
+        description: 'End date (YYYY-MM-DD, default: today)'
         required: false
       publish_telegram:
         description: 'Publish to Telegram'
@@ -61,13 +57,12 @@ jobs:
         run: |
           cd agent/integrations/telegram
           pip install -r requirements.txt
-          if [ -n "${{ github.event.inputs.start_date }}" ]; then
-            ARGS="--start-date ${{ github.event.inputs.start_date }}"
-            [ -n "${{ github.event.inputs.end_date }}" ] && ARGS="$ARGS --end-date ${{ github.event.inputs.end_date }}"
-            python telegram.py --read $ARGS
-          else
-            python telegram.py --read --since ${{ github.event.inputs.since_hours || '24' }}
-          fi
+          START_DATE="${{ github.event.inputs.start_date }}"
+          END_DATE="${{ github.event.inputs.end_date }}"
+          ARGS=""
+          [ -n "$START_DATE" ] && ARGS="$ARGS --start-date $START_DATE"
+          [ -n "$END_DATE" ] && ARGS="$ARGS --end-date $END_DATE"
+          python telegram.py --read $ARGS
 
       - uses: actions/upload-artifact@v7
         with:
@@ -187,7 +182,6 @@ jobs:
           cp blog_digest.txt /tmp/llm_response.txt
           pip install -r agent/integrations/ghost/requirements.txt
           python agent/integrations/ghost/ghost.py --post \
-            --since-hours ${{ github.event.inputs.since_hours || '24' }} \
             --start-date "${{ github.event.inputs.start_date }}" \
             --end-date "${{ github.event.inputs.end_date }}"
 
@@ -209,6 +203,5 @@ jobs:
           cp blog_digest.txt /tmp/llm_response.txt
           pip install -r agent/integrations/substack/requirements.txt
           python agent/integrations/substack/substack.py --post \
-            --since-hours ${{ github.event.inputs.since_hours || '24' }} \
             --start-date "${{ github.event.inputs.start_date }}" \
             --end-date "${{ github.event.inputs.end_date }}"
